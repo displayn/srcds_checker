@@ -1,0 +1,17 @@
+CHECK HOST srcds_server1 ADDRESS localhost
+START PROGRAM = "/etc/init.d/srcds start"
+STOP PROGRAM = "/etc/init.d/srcds stop"
+IF FAILED PORT 27015 TYPE UDP
+  WITH TIMEOUT 5 SECONDS
+  FOR 3 CYCLES
+THEN RESTART
+EVERY 3 CYCLES
+IF 3 RESTARTS WITHIN 10 CYCLES THEN TIMEOUT
+ALERT myemail@myprovider.com ON {timeout}
+  WITH MAIL-FORMAT {
+   from:     monit@$HOST
+   subject:  $HOST: Srcds down
+   message:  $HOST: Srcds down since $DATE
+  }
+
+

@@ -1,0 +1,112 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:  srcds
+# Required-Start: networking
+# Required-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6
+# Short-Description:    srcds server
+# Description:    Starts the Source Dedicated Server
+### END INIT INFO
+
+## Server options
+TITLE='Garrys Mod'                             # Human-readable name. anything you want.
+NAME='gmodsrv'            ## MUST BE UNIQUE! ##    # Session name for 'screen' wrapper. 
+DAEMON='./srcds_run'                           # The server daemon or executable.
+STEAM='/home/gameserver/srcds1/orangebox'      # Steam installation
+USERNAME='gameserver'                          # Linux username to run under.
+STEAMBIN='/home/gameserver/srcds1'             # Steam binary file. (include the actual file in this path?)
+CFG='server.cfg'                               # specify server.cfg for multiple servers of the same game in the same dir.
+
+## Game options
+PORT='27015'                               	# Port number
+MAP='gm_flatgrass'                          # Initial map to start
+GAME='garrysmod'                            # Game type (tf|cstrike|valve|hl2mp|cspromod)
+PLAYERS='16'                                # Maximum number of players
+AUTHKEY='insertkeyhere'                     # Authkey from http://steamcommunity.com/dev                  	  
+INTERFACE='screen -dmS'			                # Wrapper for server instance
+
+## Server options string
+# OPTS="-game $GAME +hostname \"$CLIENT\" +map $MAP +ip $IP -port $PORT \
+#    -autoupdate +maxplayers $PLAYERS
+
+OPTS="-game $GAME +map $MAP -port $PORT +maxplayers $PLAYERS -autoupdate -authkey $AUTHKEY -steambin  +exec $CFG"
+
+ME=`whoami`
+as_user() {
+  if [[ "$ME" == "$USERNAME" ]] ; then
+    bash -c "$1"
+  else
+    su - $USERNAME -c "$1"
+  fi
+}
+
+service_start() {
+  if pgrep -f $NAME > /dev/null
+  then
+    echo "$TITLE is already running!"
+  else
+    echo "Starting $TITLE..."
+    as_user "cd $STEAM && $INTERFACE $NAME $DAEMON $OPTS"
+    sleep 7
+    if pgrep -f $NAME > /dev/null
+        then
+          echo "OK"
+        else
+          echo "Could not start $TITLE."
+    fi
+fi
+}
+
+service_stop() {
+if pgrep -f $NAME > /dev/null
+  then
+    echo "Stopping $TITLE..."
+    screen -S $NAME -X quit
+    sleep 3
+    if pgrep -f $NAME > /dev/null
+      then
+        echo "ERROR: $TITLE was not stopped."
+      else
+        echo "OK"
+    fi
+  else
+    echo "$TITLE is not running."
+fi
+}
+
+service_status() {
+if pgrep -f $NAME > /dev/null
+        then
+                echo "$TITLE is running."
+        else
+                echo "$TITLE is NOT running."
+fi
+}
+
+# start, stop, restart et. all
+case "$1" in
+        'start')
+                service_start
+        ;;
+        'stop')
+                service_stop
+        ;;
+        'restart')
+                service_stop
+                sleep 1
+                service_start
+        ;;
+        'status')
+                service_status
+        ;;
+        'update')
+                service_update
+        ;;
+*)
+  echo "Usage $0 start|stop|restart|status|update"
+  exit 1
+        ;;
+esac
+
+exit 0
