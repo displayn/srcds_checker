@@ -1,6 +1,6 @@
 #srcds checker v1
 
-this is a shell script that will let you run and check Source Dedicated Server (SRCDS) from Valve as a service on your linux mashine.
+this is a shell script that will let you run and check Source Dedicated Server (SRCDS) from Valve as a service on your linux machine.
 ##Requirements
 
 * monit
