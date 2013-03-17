@@ -14,10 +14,7 @@ lol
 
 ##based on 
 
-http://www.patrick-gotthard.de/4529/teamspeak-3-server-unter-linux-installieren
-
-&
-
+http://www.patrick-gotthard.de/4529/teamspeak-3-server-unter-linux-installieren &
 http://forums.srcds.com/viewtopic/5835/3
 
 and some other scripts
